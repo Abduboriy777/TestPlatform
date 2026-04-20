@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass main-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">Teacher Panel / Subjects</h2>
+            <div class="opacity-75">Bu yerda teacher o‘z subjectlarini boshqaradi.</div>
+        </div>
+        <a href="{% url 'teacher_subject_create' %}" class="btn btn-primary rounded-pill">
+            + Subject
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for subject in page_obj %}
+            <div class="col-lg-4 col-md-6">
+                <div class="glass main-card p-4 h-100">
+                    <h4 class="fw-bold">{{ subject.name }}</h4>
+                    <p class="opacity-75">
+                        {{ subject.description|default:"Description yo‘q" }}
+                    </p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{% url 'teacher_quiz_list' subject.id %}"
+                           class="btn btn-primary rounded-pill btn-sm">
+                            Quizzes
+                        </a>
+                        <a href="{% url 'teacher_subject_edit' subject.id %}"
+                           class="btn btn-outline-secondary rounded-pill btn-sm">
+                            Edit
+                        </a>
+                        <a href="{% url 'teacher_subject_delete' subject.id %}"
+                           class="btn btn-outline-danger rounded-pill btn-sm">
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info rounded-4">Siz hali subject yaratmagansiz.</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include 'quiz/pagination.html' with page_obj=page_obj %}
+</div>
+{% endblock %}

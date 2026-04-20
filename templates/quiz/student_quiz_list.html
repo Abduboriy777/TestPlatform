@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass main-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">{{ subject.name }} testlari</h2>
+            <div class="opacity-75">Faqat active quizlar ko‘rinadi.</div>
+        </div>
+        <a href="{% url 'student_subject_list' %}" class="btn btn-outline-secondary rounded-pill">
+            Ortga
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for quiz in page_obj %}
+            <div class="col-lg-4 col-md-6">
+                <div class="glass main-card p-4 h-100">
+                    <h4 class="fw-bold">{{ quiz.title }}</h4>
+                    <p class="opacity-75">
+                        {{ quiz.description|default:"Description yo‘q" }}
+                    </p>
+
+                    <ul class="small mb-3 ps-3">
+                        <li>Questions: {{ quiz.question_count }}</li>
+                        <li>Timer: {{ quiz.duration_minutes }} min</li>
+                        <li>Pass: {{ quiz.pass_percentage }}%</li>
+                    </ul>
+
+                    <a href="{% url 'start_quiz' quiz.id %}" class="btn btn-primary rounded-pill">
+                        Start
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info rounded-4">Quiz topilmadi.</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include 'quiz/pagination.html' with page_obj=page_obj %}
+</div>
+{% endblock %}

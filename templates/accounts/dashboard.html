@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass hero-card p-4 p-lg-5">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-8">
+            <span class="badge bg-info-subtle text-info-emphasis rounded-pill mb-3">Dashboard</span>
+            <h2 class="fw-bold mb-2">Salom, {{ request.user.first_name|default:request.user.username }}</h2>
+            <p class="opacity-75 mb-4">Sizning rolingiz: <strong>{{ request.user.role }}</strong></p>
+            <div class="d-flex flex-wrap gap-2">
+                {% if request.user.role == 'student' %}
+                    <a href="/quiz/subjects/" class="btn btn-primary rounded-pill px-4">Subjects</a>
+                    <a href="/quiz/history/" class="btn btn-outline-secondary rounded-pill px-4">History</a>
+                {% else %}
+                    <a href="/quiz/teacher/subjects/" class="btn btn-primary rounded-pill px-4">Teacher Panel</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

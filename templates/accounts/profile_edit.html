@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile | Test Platform{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="glass main-card p-4 p-lg-5">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Profilni tahrirlash</h2>
+                    <p class="opacity-75 mb-0">Ma’lumotlaringizni yangilang</p>
+                </div>
+                <a href="{% url 'profile' %}" class="btn btn-outline-secondary rounded-pill">
+                    Ortga
+                </a>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="glass rounded-4 p-4 text-center h-100">
+                            {% if request.user.avatar %}
+                                <img src="{{ request.user.avatar.url }}" alt="Avatar" class="avatar-lg mb-3">
+                            {% else %}
+                                <div class="glass d-inline-flex align-items-center justify-content-center avatar-lg mb-3 fs-1 fw-bold">
+                                    {{ request.user.username|slice:':1'|upper }}
+                                </div>
+                            {% endif %}
+
+                            <h5 class="fw-bold mb-1">{{ request.user.full_name }}</h5>
+                            <div class="opacity-75 mb-3">@{{ request.user.username }}</div>
+
+                            <label class="form-label text-start w-100">Profil rasmi</label>
+                            {{ form.avatar }}
+
+                            {% if form.avatar.errors %}
+                                <div class="text-danger small mt-2">
+                                    {{ form.avatar.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Ism</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Familiya</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Tug‘ilgan sana</label>
+                                {{ form.birth_date }}
+                                {% if form.birth_date.errors %}
+                                    <div class="text-danger small mt-1">{{ form.birth_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Telegram</label>
+                                {{ form.telegram }}
+                                {% if form.telegram.errors %}
+                                    <div class="text-danger small mt-1">{{ form.telegram.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Instagram</label>
+                                {{ form.instagram }}
+                                {% if form.instagram.errors %}
+                                    <div class="text-danger small mt-1">{{ form.instagram.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Bio</label>
+                                {{ form.bio }}
+                                {% if form.bio.errors %}
+                                    <div class="text-danger small mt-1">{{ form.bio.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger rounded-4 mt-4">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                        Saqlash
+                    </button>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                        Bekor qilish
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

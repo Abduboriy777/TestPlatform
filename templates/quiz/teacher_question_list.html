@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass main-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">{{ quiz.title }} / Questions</h2>
+            <div class="opacity-75">Savollar va 4 ta variant boshqaruvi.</div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'teacher_question_create' quiz.id %}"
+               class="btn btn-primary rounded-pill">
+                + Question
+            </a>
+            <a href="{% url 'teacher_quiz_list' quiz.subject.id %}"
+               class="btn btn-outline-secondary rounded-pill">
+                Quizzes
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for question in page_obj %}
+            <div class="col-12">
+                <div class="glass main-card p-4">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                        <div>
+                            <h5 class="fw-bold">{{ question.order }}. {{ question.text }}</h5>
+                            <ul class="mb-0 mt-3">
+                                {% for choice in question.choices.all %}
+                                    <li>
+                                        {{ choice.text }}
+                                        {% if choice.is_correct %}
+                                            <strong class="text-success">(correct)</strong>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="{% url 'teacher_question_edit' question.id %}"
+                               class="btn btn-outline-secondary rounded-pill btn-sm">
+                                Edit
+                            </a>
+                            <a href="{% url 'teacher_question_delete' question.id %}"
+                               class="btn btn-outline-danger rounded-pill btn-sm">
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info rounded-4">Savol yo‘q.</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include 'quiz/pagination.html' with page_obj=page_obj %}
+</div>
+{% endblock %}

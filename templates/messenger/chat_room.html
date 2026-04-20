@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block title %}{{ room.room_title }} | Chat{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-layout { min-height: 72vh; }
+    .chat-sidebar { max-height: 72vh; overflow: auto; }
+    .chat-messages { height: 58vh; overflow-y: auto; }
+    .msg-bubble {
+        max-width: 78%;
+        border-radius: 18px;
+        padding: 12px 14px;
+    }
+    .msg-me {
+        margin-left: auto;
+        background: rgba(13,110,253,0.22);
+        border: 1px solid rgba(13,110,253,0.28);
+    }
+    .msg-other {
+        margin-right: auto;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 chat-layout">
+    <div class="col-lg-4">
+        <div class="glass main-card p-4 chat-sidebar h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Rooms</h5>
+                <a href="{% url 'create_group' %}" class="btn btn-primary btn-sm rounded-pill">+ Group</a>
+            </div>
+
+            <div class="d-grid gap-2 mb-4">
+                {% for item in rooms %}
+                    <a href="{% url 'chat_room' item.id %}" class="btn {% if item.id == room.id %}btn-primary{% else %}btn-outline-secondary{% endif %} text-start rounded-4">
+                        {{ item.room_title }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <h6 class="fw-bold mb-3">A’zolar</h6>
+            <div class="d-grid gap-2 mb-4">
+                {% for member in members %}
+                    <div class="glass rounded-4 p-3">
+                        <div class="fw-semibold">{{ member.user.full_name }}</div>
+                        <div class="small opacity-75">@{{ member.user.username }} • {{ member.user.role }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="glass main-card p-4 h-100 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h4 class="fw-bold mb-1">{{ room.room_title }}</h4>
+                    <div class="small opacity-75">{{ room.room_type|title }} chat</div>
+                </div>
+            </div>
+
+            <div id="chatMessages" class="chat-messages d-flex flex-column gap-3 mb-3">
+                {% for message in messages %}
+                    <div class="msg-bubble {% if message.sender_id == request.user.id %}msg-me{% else %}msg-other{% endif %}">
+                        <div class="small fw-semibold mb-1">{{ message.sender.username }}</div>
+                        <div>{{ message.text }}</div>
+                        <div class="small opacity-50 mt-1">{{ message.created_at|date:'H:i' }}</div>
+                    </div>
+                {% empty %}
+                    <div class="alert alert-info rounded-4">Hali message yo‘q.</div>
+                {% endfor %}
+            </div>
+
+            <form id="chatForm" class="mt-auto">
+                <div class="input-group">
+                    <input type="text" id="chatInput" class="form-control rounded-start-pill" placeholder="Xabar yozing...">
+                    <button class="btn btn-primary rounded-end-pill px-4" type="submit">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const roomId = {{ room.id }};
+    const currentUserId = {{ request.user.id }};
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/chat/${roomId}/`);
+
+    const messagesBox = document.getElementById("chatMessages");
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("chatInput");
+
+    function appendMessage(sender, senderId, message, time) {
+        const wrap = document.createElement("div");
+        wrap.className = `msg-bubble ${Number(senderId) === Number(currentUserId) ? "msg-me" : "msg-other"}`;
+        wrap.innerHTML = `
+            <div class="small fw-semibold mb-1">${sender}</div>
+            <div>${message}</div>
+            <div class="small opacity-50 mt-1">${time}</div>
+        `;
+        messagesBox.appendChild(wrap);
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        appendMessage(data.sender, data.sender_id, data.message, data.time);
+    };
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+        socket.send(JSON.stringify({ message }));
+        input.value = "";
+    });
+
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+</script>
+{% endblock %}

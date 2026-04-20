@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass main-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">{{ subject.name }} / Quizzes</h2>
+            <div class="opacity-75">Teacher o‘zi quiz yaratadi va boshqaradi.</div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'teacher_quiz_create' %}" class="btn btn-primary rounded-pill">
+                + Quiz
+            </a>
+            <a href="{% url 'teacher_subject_list' %}" class="btn btn-outline-secondary rounded-pill">
+                Subjects
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for quiz in page_obj %}
+            <div class="col-lg-4 col-md-6">
+                <div class="glass main-card p-4 h-100">
+                    <h4 class="fw-bold">{{ quiz.title }}</h4>
+                    <p class="opacity-75">
+                        {{ quiz.description|default:"Description yo‘q" }}
+                    </p>
+
+                    <ul class="small mb-3 ps-3">
+                        <li>Duration: {{ quiz.duration_minutes }} min</li>
+                        <li>Pass: {{ quiz.pass_percentage }}%</li>
+                        <li>Active: {{ quiz.is_active }}</li>
+                    </ul>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{% url 'teacher_question_list' quiz.id %}"
+                           class="btn btn-primary rounded-pill btn-sm">
+                            Questions
+                        </a>
+                        <a href="{% url 'teacher_quiz_edit' quiz.id %}"
+                           class="btn btn-outline-secondary rounded-pill btn-sm">
+                            Edit
+                        </a>
+                        <a href="{% url 'teacher_quiz_delete' quiz.id %}"
+                           class="btn btn-outline-danger rounded-pill btn-sm">
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info rounded-4">Quiz topilmadi.</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include 'quiz/pagination.html' with page_obj=page_obj %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass certificate-box p-5 text-center">
+    <div class="mb-3 small text-uppercase opacity-75">Certificate of Achievement</div>
+    <h1 class="display-5 fw-bold mb-4">Certificate</h1>
+
+    <p class="fs-5">This certifies that</p>
+    <h2 class="fw-bold my-3">
+        {{ attempt.student.get_full_name|default:attempt.student.username }}
+    </h2>
+    <p class="fs-5">successfully passed</p>
+    <h3 class="fw-bold my-3">{{ attempt.quiz.title }}</h3>
+
+    <p class="mb-2">Subject: {{ attempt.quiz.subject.name }}</p>
+    <p class="mb-2">Percentage: {{ attempt.percentage }}%</p>
+    <p class="mb-2">Certificate Code: {{ attempt.certificate_code }}</p>
+    <p class="mb-4">Date: {{ attempt.submitted_at|date:'Y-m-d H:i' }}</p>
+
+    <div class="d-flex justify-content-center gap-2 flex-wrap mt-4">
+        <button class="btn btn-primary rounded-pill px-4" onclick="window.print()">
+            Print
+        </button>
+        <a href="{% url 'history' %}" class="btn btn-outline-secondary rounded-pill px-4">
+            History
+        </a>
+    </div>
+</div>
+{% endblock %}

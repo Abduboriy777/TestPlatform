@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass main-card p-4">
+    <h2 class="fw-bold mb-4">Natijalar tarixi</h2>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Quiz</th>
+                    <th>Subject</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page_obj %}
+                    <tr>
+                        <td>{{ item.quiz.title }}</td>
+                        <td>{{ item.quiz.subject.name }}</td>
+                        <td>{{ item.score }}/{{ item.total }}</td>
+                        <td>{{ item.percentage }}%</td>
+                        <td>
+                            {% if item.passed %}
+                                <span class="badge text-bg-success">Passed</span>
+                            {% else %}
+                                <span class="badge text-bg-danger">Failed</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'result_detail' item.id %}"
+                               class="btn btn-sm btn-outline-primary rounded-pill">
+                                Open
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">History bo‘sh.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'quiz/pagination.html' with page_obj=page_obj %}
+</div>
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass hero-card p-4 p-lg-5 mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 mb-3">
+                Django Test Platform v2
+            </span>
+            <h1 class="display-5 fw-bold mb-3">
+                Teacher panel, timer, AJAX submit, history, certificate
+            </h1>
+            <p class="lead opacity-75 mb-4">
+                Bu versiya oddiy demo emas. Teacher o‘zi test bazani boshqaradi, student esa testni
+                bir marta ishlaydi va natijani foiz bilan ko‘radi.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2">
+                {% if not request.user.is_authenticated %}
+                    <a href="/accounts/register/" class="btn btn-primary btn-lg rounded-pill px-4">Boshlash</a>
+                    <a href="/accounts/login/" class="btn btn-outline-light btn-lg rounded-pill px-4">Login</a>
+                {% elif request.user.role == 'student' %}
+                    <a href="/quiz/subjects/" class="btn btn-primary btn-lg rounded-pill px-4">Subjects</a>
+                {% else %}
+                    <a href="/quiz/teacher/subjects/" class="btn btn-primary btn-lg rounded-pill px-4">Teacher Panel</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="glass main-card p-3 text-center h-100">
+                        <div class="small opacity-75">Subjects</div>
+                        <div class="fs-2 fw-bold">{{ subjects_count }}</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="glass main-card p-3 text-center h-100">
+                        <div class="small opacity-75">Active Quizzes</div>
+                        <div class="fs-2 fw-bold">{{ quizzes_count }}</div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="glass main-card p-3 text-center h-100">
+                        <div class="small opacity-75">Students</div>
+                        <div class="fs-2 fw-bold">{{ students_count }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="glass main-card p-4 p-lg-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3 py-2 mb-2">
+                Leaderboard
+            </span>
+            <h2 class="fw-bold mb-1">Student reyting zonasi</h2>
+            <p class="opacity-75 mb-0">
+                Bu yerda barcha studentlar, nechta test ishlagani va o‘rtacha bali ko‘rinadi.
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        {% for student in top_students %}
+            <div class="col-lg-4">
+                <div class="glass main-card p-4 h-100 text-center">
+                    <div class="mb-3">
+                        {% if forloop.counter == 1 %}
+                            <span class="badge text-bg-warning rounded-pill px-3 py-2">🥇 1-o‘rin</span>
+                        {% elif forloop.counter == 2 %}
+                            <span class="badge text-bg-secondary rounded-pill px-3 py-2">🥈 2-o‘rin</span>
+                        {% else %}
+                            <span class="badge rounded-pill px-3 py-2" style="background:#cd7f32; color:white;">
+                                🥉 3-o‘rin
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <h4 class="fw-bold mb-2">{{ student.username }}</h4>
+                    <div class="small opacity-75 mb-3">{{ student.first_name|default:"Student" }}</div>
+                    <div class="display-6 fw-bold mb-2">{{ student.avg_percentage|floatformat:1 }}%</div>
+                    <div class="small opacity-75">O‘rtacha ball</div>
+
+                    <hr>
+
+                    <div class="row g-3 text-center">
+                        <div class="col-6">
+                            <div class="glass rounded-4 p-3">
+                                <div class="small opacity-75">Tests</div>
+                                <div class="fw-bold fs-5">{{ student.completed_tests }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="glass rounded-4 p-3">
+                                <div class="small opacity-75">Rank</div>
+                                <div class="fw-bold fs-5">#{{ forloop.counter }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info rounded-4 mb-0">Hali studentlar yo‘q.</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Student</th>
+                    <th>Tests soni</th>
+                    <th>O‘rtacha ball</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in top_students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ student.username }}</td>
+                        <td>{{ student.completed_tests }}</td>
+                        <td>{{ student.avg_percentage|floatformat:1 }}%</td>
+                        <td>
+                            {% if forloop.counter == 1 %}
+                                <span class="badge text-bg-warning">Top 1</span>
+                            {% elif forloop.counter == 2 %}
+                                <span class="badge text-bg-secondary">Top 2</span>
+                            {% else %}
+                                <span class="badge" style="background:#cd7f32; color:white;">Top 3</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                {% for student in other_students %}
+                    <tr>
+                        <td>{{ forloop.counter|add:3 }}</td>
+                        <td>{{ student.username }}</td>
+                        <td>{{ student.completed_tests }}</td>
+                        <td>{{ student.avg_percentage|floatformat:1 }}%</td>
+                        <td>
+                            {% if student.avg_percentage >= 80 %}
+                                <span class="badge text-bg-success">Strong</span>
+                            {% elif student.avg_percentage >= 50 %}
+                                <span class="badge text-bg-primary">Normal</span>
+                            {% else %}
+                                <span class="badge text-bg-danger">Low</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    {% if not top_students %}
+                    <tr>
+                        <td colspan="5">Leaderboard bo‘sh.</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
