@@ -404,3 +404,6 @@ def teacher_question_delete_view(request, pk):
     question.delete()
     messages.success(request, 'Savol o‘chirildi.')
     return redirect('teacher_question_list', quiz_id=quiz_id)
+
+
+
