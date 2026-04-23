@@ -1,28 +1,44 @@
 {% extends 'base.html' %}
 
+{% block title %}Home | Test Platform{% endblock %}
+
 {% block content %}
 <div class="glass hero-card p-4 p-lg-5 mb-4">
     <div class="row align-items-center g-4">
         <div class="col-lg-7">
             <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 mb-3">
-                Django Test Platform v2
+                Django Test Platform
             </span>
             <h1 class="display-5 fw-bold mb-3">
-                Teacher panel, timer, AJAX submit, history, certificate
+                Teacher panel, timer, analytics, leaderboard
             </h1>
             <p class="lead opacity-75 mb-4">
-                Bu versiya oddiy demo emas. Teacher o‘zi test bazani boshqaradi, student esa testni
-                bir marta ishlaydi va natijani foiz bilan ko‘radi.
+                Teacher o‘zi test bazani boshqaradi, student esa testni hohlagancha ishlaydi va
+                eng yaxshi natijasi saqlanadi.
             </p>
 
             <div class="d-flex flex-wrap gap-2">
                 {% if not request.user.is_authenticated %}
-                    <a href="/accounts/register/" class="btn btn-primary btn-lg rounded-pill px-4">Boshlash</a>
-                    <a href="/accounts/login/" class="btn btn-outline-light btn-lg rounded-pill px-4">Login</a>
+                    <a href="/accounts/register/" class="btn btn-primary btn-lg rounded-pill px-4">
+                        Boshlash
+                    </a>
+                    <a href="/accounts/login/" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                        Login
+                    </a>
                 {% elif request.user.role == 'student' %}
-                    <a href="/quiz/subjects/" class="btn btn-primary btn-lg rounded-pill px-4">Subjects</a>
+                    <a href="/quiz/subjects/" class="btn btn-primary btn-lg rounded-pill px-4">
+                        Subjects
+                    </a>
+                    <a href="/accounts/profile/" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                        Profile
+                    </a>
                 {% else %}
-                    <a href="/quiz/teacher/subjects/" class="btn btn-primary btn-lg rounded-pill px-4">Teacher Panel</a>
+                    <a href="/quiz/teacher/subjects/" class="btn btn-primary btn-lg rounded-pill px-4">
+                        Teacher Panel
+                    </a>
+                    <a href="/accounts/profile/" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                        Profile
+                    </a>
                 {% endif %}
             </div>
         </div>
@@ -35,12 +51,14 @@
                         <div class="fs-2 fw-bold">{{ subjects_count }}</div>
                     </div>
                 </div>
+
                 <div class="col-6">
                     <div class="glass main-card p-3 text-center h-100">
-                        <div class="small opacity-75">Active Quizzes</div>
+                        <div class="small opacity-75">Published Quizzes</div>
                         <div class="fs-2 fw-bold">{{ quizzes_count }}</div>
                     </div>
                 </div>
+
                 <div class="col-12">
                     <div class="glass main-card p-3 text-center h-100">
                         <div class="small opacity-75">Students</div>
@@ -52,7 +70,7 @@
     </div>
 </div>
 
-<div class="glass main-card p-4 p-lg-5">
+<div class="glass main-card p-4 p-lg-5 mb-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
         <div>
             <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3 py-2 mb-2">
@@ -159,13 +177,51 @@
                     </tr>
                 {% empty %}
                     {% if not top_students %}
-                    <tr>
-                        <td colspan="5">Leaderboard bo‘sh.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="5">Leaderboard bo‘sh.</td>
+                        </tr>
                     {% endif %}
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+
+<div class="glass main-card p-4 p-lg-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-3 py-2 mb-2">
+                Top quizzes
+            </span>
+            <h2 class="fw-bold mb-1">Eng ko‘p ishlangan testlar</h2>
+            <p class="opacity-75 mb-0">
+                Qaysi testlar eng ko‘p ishlanayotganini shu yerda ko‘rasiz.
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for quiz in most_attempted_quizzes %}
+            <div class="col-lg-4 col-md-6">
+                <div class="glass main-card p-4 h-100">
+                    <h4 class="fw-bold">{{ quiz.title }}</h4>
+                    <div class="small opacity-75 mb-2">{{ quiz.subject.name }}</div>
+                    <div class="mb-2">
+                        <strong>Total attempts:</strong> {{ quiz.total_attempts }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Students:</strong> {{ quiz.unique_students }}
+                    </div>
+                    <div>
+                        <strong>Best result:</strong> {{ quiz.best_result|floatformat:1 }}%
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info rounded-4">Hali ishlangan testlar yo‘q.</div>
+            </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

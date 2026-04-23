@@ -1,5 +1,5 @@
 from django import forms
-from .models import Subject, Quiz
+from .models import Subject, Quiz, Question, Feedback
 
 
 class BootstrapMixin:
@@ -12,6 +12,8 @@ class BootstrapMixin:
             elif isinstance(widget, forms.Textarea):
                 widget.attrs['class'] = 'form-control'
                 widget.attrs['rows'] = 4
+            elif isinstance(widget, forms.ClearableFileInput):
+                widget.attrs['class'] = 'form-control'
             else:
                 widget.attrs['class'] = 'form-control'
 
@@ -25,11 +27,16 @@ class SubjectForm(BootstrapMixin, forms.ModelForm):
 class QuizForm(BootstrapMixin, forms.ModelForm):
     class Meta:
         model = Quiz
-        fields = ['subject', 'title', 'description', 'duration_minutes', 'pass_percentage', 'is_active']
+        fields = [
+            'subject', 'title', 'description', 'duration_minutes', 'pass_percentage',
+            'status', 'difficulty', 'randomize_questions', 'randomize_choices'
+        ]
 
 
 class QuestionCreateForm(BootstrapMixin, forms.Form):
     text = forms.CharField(max_length=500)
+    image = forms.ImageField(required=False)
+    explanation = forms.CharField(required=False, widget=forms.Textarea)
     order = forms.IntegerField(min_value=1, initial=1)
     choice_1 = forms.CharField(max_length=255)
     choice_2 = forms.CharField(max_length=255)
@@ -39,3 +46,9 @@ class QuestionCreateForm(BootstrapMixin, forms.Form):
         choices=[('1', '1-variant'), ('2', '2-variant'), ('3', '3-variant'), ('4', '4-variant')],
         widget=forms.Select
     )
+
+
+class FeedbackForm(BootstrapMixin, forms.ModelForm):
+    class Meta:
+        model = Feedback
+        fields = ['text']

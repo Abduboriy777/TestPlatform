@@ -8,6 +8,15 @@
             <div class="opacity-75">Kerakli fanni tanlang.</div>
         </div>
     </div>
+    
+    <form method="get" class="row g-2 mb-4">
+    <div class="col-md-10">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Subject qidirish...">
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-primary rounded-pill">Search</button>
+    </div>
+</form>
 
     <div class="row g-4">
         {% for subject in page_obj %}

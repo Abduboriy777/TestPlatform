@@ -7,8 +7,11 @@ from .views import (
     take_quiz_view,
     submit_quiz_view,
     result_detail_view,
+    review_view,
     history_view,
     certificate_view,
+    notifications_view,
+    add_feedback_view,
     teacher_subject_list_view,
     teacher_subject_create_view,
     teacher_subject_edit_view,
@@ -27,17 +30,20 @@ from .views import (
 urlpatterns = [
     path('', home_view, name='home'),
 
-    # student
     path('subjects/', student_subject_list_view, name='student_subject_list'),
     path('subjects/<int:subject_id>/quizzes/', student_quiz_list_view, name='student_quiz_list'),
-    path('quiz/<int:quiz_id>/start/', start_quiz_view, name='start_quiz'),
-    path('quiz/<int:quiz_id>/take/', take_quiz_view, name='take_quiz'),
-    path('quiz/<int:quiz_id>/submit/', submit_quiz_view, name='submit_quiz'),
+
+    path('<int:quiz_id>/start/', start_quiz_view, name='start_quiz'),
+    path('<int:quiz_id>/take/<int:attempt_id>/', take_quiz_view, name='take_quiz'),
+    path('<int:quiz_id>/submit/<int:attempt_id>/', submit_quiz_view, name='submit_quiz'),
+
     path('result/<int:attempt_id>/', result_detail_view, name='result_detail'),
+    path('review/<int:attempt_id>/', review_view, name='review'),
     path('history/', history_view, name='history'),
     path('certificate/<int:attempt_id>/', certificate_view, name='certificate'),
+    path('notifications/', notifications_view, name='notifications'),
+    path('feedback/<int:attempt_id>/', add_feedback_view, name='add_feedback'),
 
-    # teacher
     path('teacher/subjects/', teacher_subject_list_view, name='teacher_subject_list'),
     path('teacher/subjects/create/', teacher_subject_create_view, name='teacher_subject_create'),
     path('teacher/subjects/<int:pk>/edit/', teacher_subject_edit_view, name='teacher_subject_edit'),

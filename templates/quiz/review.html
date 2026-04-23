@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass main-card p-4 p-lg-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">{{ attempt.quiz.title }} review</h2>
+            <p class="opacity-75 mb-0">Qaysi javob to‘g‘ri, qaysisi noto‘g‘ri ekanini va explanationni ko‘rasiz.</p>
+        </div>
+        <a href="{% url 'result_detail' attempt.id %}" class="btn btn-outline-secondary rounded-pill">Back</a>
+    </div>
+
+    <div class="d-grid gap-4">
+        {% for answer in answers %}
+            <div class="glass main-card p-4">
+                <h5 class="fw-bold mb-3">{{ forloop.counter }}. {{ answer.question.text }}</h5>
+
+                {% if answer.question.image %}
+                    <img src="{{ answer.question.image.url }}" alt="question image" class="img-fluid rounded-4 mb-3">
+                {% endif %}
+
+                <ul class="mb-3">
+                    {% for choice in answer.question.choices.all %}
+                        <li>
+                            {{ choice.text }}
+                            {% if choice.is_correct %}<strong class="text-success">(correct)</strong>{% endif %}
+                            {% if answer.selected_choice and answer.selected_choice.id == choice.id %}
+                                <strong class="text-primary">(your answer)</strong>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="mb-2">
+                    {% if answer.is_correct %}
+                        <span class="badge text-bg-success">Correct</span>
+                    {% else %}
+                        <span class="badge text-bg-danger">Wrong</span>
+                    {% endif %}
+                </div>
+
+                <div class="small opacity-75">
+                    <strong>Explanation:</strong> {{ answer.question.explanation|default:'Explanation yo‘q' }}
+                </div>
+            </div>
+        {% empty %}
+            <div class="alert alert-info rounded-4">Review ma’lumoti topilmadi.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

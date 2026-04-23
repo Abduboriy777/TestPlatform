@@ -1,0 +1,53 @@
+<div class="col-md-3">
+    <div class="glass main-card p-4 text-center">
+        <div class="small opacity-75">Total attempts</div>
+        <div class="display-6 fw-bold">{{ total_attempts }}</div>
+    </div>
+</div>
+<div class="col-md-3">
+    <div class="glass main-card p-4 text-center">
+        <div class="small opacity-75">Students</div>
+        <div class="display-6 fw-bold">{{ unique_students }}</div>
+    </div>
+</div>
+<div class="col-md-3">
+    <div class="glass main-card p-4 text-center">
+        <div class="small opacity-75">Average score</div>
+        <div class="display-6 fw-bold">{{ avg_score|floatformat:1 }}%</div>
+    </div>
+</div>
+<div class="col-md-3">
+    <div class="glass main-card p-4 text-center">
+        <div class="small opacity-75">Passed</div>
+        <div class="display-6 fw-bold">{{ passed_count }}</div>
+    </div>
+</div>
+
+
+<div class="glass main-card p-4 mt-4">
+    <h4 class="fw-bold mb-3">Kim nechta marta ishlagan</h4>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Attempt count</th>
+                    <th>Best score</th>
+                    <th>Best percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in student_attempt_stats %}
+                    <tr>
+                        <td>{{ item.student__username }}</td>
+                        <td>{{ item.attempt_count }}</td>
+                        <td>{{ item.best_score }}</td>
+                        <td>{{ item.best_percentage }}%</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4">Hali urinishlar yo‘q.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

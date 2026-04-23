@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass main-card p-4">
+    <h2 class="fw-bold mb-4">Notifications</h2>
+    <div class="d-grid gap-3">
+        {% for item in page_obj %}
+            <div class="glass rounded-4 p-3">
+                <div class="fw-bold">{{ item.title }}</div>
+                <div class="opacity-75">{{ item.message }}</div>
+                <div class="small opacity-50 mt-2">{{ item.created_at|date:'Y-m-d H:i' }}</div>
+            </div>
+        {% empty %}
+            <div class="alert alert-info rounded-4">Notification yo‘q.</div>
+        {% endfor %}
+    </div>
+    {% include 'quiz/pagination.html' with page_obj=page_obj %}
+</div>
+{% endblock %}

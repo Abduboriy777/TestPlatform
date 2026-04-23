@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load quiz_extras %}
 
 {% block content %}
 <div class="glass main-card p-4">
@@ -12,31 +13,52 @@
         </a>
     </div>
 
+    <form method="get" class="row g-2 mb-4">
+    <div class="col-md-6">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Quiz qidirish...">
+    </div>
+    <div class="col-md-4">
+        <select name="difficulty" class="form-select">
+            <option value="">All difficulty</option>
+            <option value="easy" {% if difficulty == 'easy' %}selected{% endif %}>Easy</option>
+            <option value="medium" {% if difficulty == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="hard" {% if difficulty == 'hard' %}selected{% endif %}>Hard</option>
+        </select>
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-primary rounded-pill">Filter</button>
+    </div>
+</form>
+
     <div class="row g-4">
         {% for quiz in page_obj %}
-            <div class="col-lg-4 col-md-6">
-                <div class="glass main-card p-4 h-100">
-                    <h4 class="fw-bold">{{ quiz.title }}</h4>
-                    <p class="opacity-75">
-                        {{ quiz.description|default:"Description yo‘q" }}
-                    </p>
+    <div class="col-lg-4 col-md-6">
+        <div class="glass main-card p-4 h-100">
+            <h4 class="fw-bold">{{ quiz.title }}</h4>
+            <p class="opacity-75">{{ quiz.description|default:"Description yo‘q" }}</p>
+            <ul class="small mb-3 ps-3">
+                <li>Questions: {{ quiz.question_count }}</li>
+                <li>Timer: {{ quiz.duration_minutes }} min</li>
+                <li>Pass: {{ quiz.pass_percentage }}%</li>
+            </ul>
 
-                    <ul class="small mb-3 ps-3">
-                        <li>Questions: {{ quiz.question_count }}</li>
-                        <li>Timer: {{ quiz.duration_minutes }} min</li>
-                        <li>Pass: {{ quiz.pass_percentage }}%</li>
-                    </ul>
-
-                    <a href="{% url 'start_quiz' quiz.id %}" class="btn btn-primary rounded-pill">
-                        Start
-                    </a>
+            {% if best_attempts|get_item:quiz.id %}
+                <div class="glass rounded-4 p-3 mb-3">
+                    <div class="small opacity-75">Eng yaxshi natija</div>
+                    <div class="fw-bold">{{ best_attempts|get_item:quiz.id|attr:'score' }}/{{ best_attempts|get_item:quiz.id|attr:'total' }}</div>
+                    <div class="small">{{ best_attempts|get_item:quiz.id|attr:'percentage' }}%</div>
                 </div>
-            </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="alert alert-info rounded-4">Quiz topilmadi.</div>
-            </div>
-        {% endfor %}
+            {% else %}
+                <div class="glass rounded-4 p-3 mb-3">
+                    <div class="small opacity-75">Eng yaxshi natija</div>
+                    <div class="fw-bold">Hali ishlanmagan</div>
+                </div>
+            {% endif %}
+
+            <a href="{% url 'start_quiz' quiz.id %}" class="btn btn-primary rounded-pill">Qayta ishlash / Start</a>
+        </div>
+    </div>
+{% endfor %}
     </div>
 
     {% include 'quiz/pagination.html' with page_obj=page_obj %}

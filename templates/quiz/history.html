@@ -13,6 +13,7 @@
                     <th>Score</th>
                     <th>Percentage</th>
                     <th>Status</th>
+                    <th>Best</th>
                     <th></th>
                 </tr>
             </thead>
@@ -23,6 +24,13 @@
                         <td>{{ item.quiz.subject.name }}</td>
                         <td>{{ item.score }}/{{ item.total }}</td>
                         <td>{{ item.percentage }}%</td>
+                        <td>
+                            {% if item.id in best_attempt_ids %}
+                                <span class="badge text-bg-warning">Best</span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">Attempt</span>
+                            {% endif %}
+                        </td>
                         <td>
                             {% if item.passed %}
                                 <span class="badge text-bg-success">Passed</span>

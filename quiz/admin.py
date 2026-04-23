@@ -1,63 +1,79 @@
 from django.contrib import admin
-from .models import Subject, Quiz, Question, Choice, Attempt
+from .models import Subject, Quiz, Question, Choice, Attempt, StudentAnswer, Notification, Feedback
 
-# Savol ichida variantlarni (Choice) ko'rsatish uchun
-class ChoiceInline(admin.TabularInline):
-    model = Choice
-    extra = 4  # Default holatda 4 ta bo'sh katak ko'rsatadi
-    min_num = 2 # Kamida 2 ta variant bo'lishi shart
-
-# Quiz ichida savollarni (Question) ko'rsatish uchun
-class QuestionInline(admin.StackedInline):
-    model = Question
-    extra = 1
-    show_change_link = True # Savolning o'ziga o'tish tugmasi
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'created_by', 'created_at')
-    search_fields = ('name',)
-    list_filter = ('created_at',)
+    list_display = ['id', 'name', 'created_by', 'created_at']
+    search_fields = ['name']
+    list_filter = ['created_at']
+
 
 @admin.register(Quiz)
 class QuizAdmin(admin.ModelAdmin):
-    list_display = ('title', 'subject', 'duration_minutes', 'pass_percentage', 'is_active', 'question_count')
-    list_filter = ('subject', 'is_active', 'created_at')
-    search_fields = ('title', 'description')
-    inlines = [QuestionInline]
-    list_editable = ('is_active',) # Ro'yxatning o'zidan turib aktivlikni o'zgartirish
+    list_display = [
+        'id',
+        'title',
+        'subject',
+        'difficulty',
+        'status',
+        'duration_minutes',
+        'pass_percentage',
+        'created_by',
+        'created_at',
+    ]
+    search_fields = ['title', 'subject__name']
+    list_filter = ['subject', 'difficulty', 'status', 'created_at']
+    list_editable = ['status', 'difficulty']
+    ordering = ['-created_at']
+
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('text', 'quiz', 'order')
-    list_filter = ('quiz',)
-    search_fields = ('text',)
-    inlines = [ChoiceInline]
-
-@admin.register(Attempt)
-class AttemptAdmin(admin.ModelAdmin):
-    list_display = ('student', 'quiz', 'score', 'total', 'percentage', 'passed', 'submitted_at')
-    list_filter = ('quiz', 'is_completed', 'submitted_at')
-    search_fields = ('student__username', 'certificate_code')
-    readonly_fields = ('started_at', 'submitted_at', 'certificate_code', 'percentage', 'score', 'total')
-    
-    # "passed" property-sini admin panelda chiroyli ko'rsatish
-    def passed(self, obj):
-        return obj.passed
-    passed.boolean = True # To'g'ri/noto'g'ri belgisi bilan ko'rsatadi
-
+    list_display = ['id', 'quiz', 'order', 'text']
+    search_fields = ['text', 'quiz__title']
+    list_filter = ['quiz']
 
 
 @admin.register(Choice)
 class ChoiceAdmin(admin.ModelAdmin):
-    # Ro'yxatda ko'rinadigan ustunlar
-    list_display = ('text', 'question', 'is_correct')
-    
-    # Savol nomi va variant matni bo'yicha qidiruv
-    search_fields = ('text', 'question__text')
-    
-    # To'g'ri yoki noto'g'ri variantlar bo'yicha filter
-    list_filter = ('is_correct', 'question__quiz')
-    
-    # Ro'yxatning o'zida to'g'riligini o'zgartirish imkoniyati
-    list_editable = ('is_correct',)
+    list_display = ['id', 'question', 'text', 'is_correct']
+    search_fields = ['text', 'question__text']
+    list_filter = ['is_correct']
+
+
+@admin.register(Attempt)
+class AttemptAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'student',
+        'quiz',
+        'score',
+        'total',
+        'percentage',
+        'used_seconds',
+        'is_completed',
+        'created_at',
+    ]
+    search_fields = ['student__username', 'quiz__title']
+    list_filter = ['is_completed', 'quiz', 'created_at']
+
+
+@admin.register(StudentAnswer)
+class StudentAnswerAdmin(admin.ModelAdmin):
+    list_display = ['id', 'attempt', 'question', 'selected_choice', 'is_correct']
+    list_filter = ['is_correct']
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'title', 'is_read', 'created_at']
+    list_filter = ['is_read', 'created_at']
+    search_fields = ['title', 'user__username']
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ['id', 'student', 'attempt', 'created_at']
+    search_fields = ['student__username', 'attempt__quiz__title']
+    list_filter = ['created_at']
