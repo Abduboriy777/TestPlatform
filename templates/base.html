@@ -152,6 +152,12 @@
                             <li class="nav-item"><a class="btn btn-primary rounded-pill px-3" href="/accounts/register/">Register</a></li>
                         {% endif %}
 
+                        {% if user.is_authenticated and not user.telegram_id %}
+                            <div class="alert alert-warning text-center mb-0 rounded-0">
+                                ⚠️ Siz telegram ID qo‘shmagansiz!
+                            </div>
+                        {% endif %}
+
                         <li class="nav-item">
                             <button id="themeToggle" class="btn btn-outline-secondary rounded-pill px-3" type="button">Theme</button>
                         </li>

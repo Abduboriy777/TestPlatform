@@ -1,8 +1,21 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from quiz.models import Attempt
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from .forms import RegisterForm, LoginForm, ProfileForm
+
+
+@login_required
+def profile_view(request):
+    attempts = Attempt.objects.filter(student=request.user)
+
+    return render(request, 'accounts/profile.html', {
+        'attempts': attempts
+    })
+
+
+
 
 
 class CustomLoginView(LoginView):

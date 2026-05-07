@@ -79,8 +79,16 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Telegram</label>
-                                {{ form.telegram }}
+                                <label class="form-label">Telegram username</label>
+                                {{ form.telegram_username }}
+                                {% if form.telegram.errors %}
+                                    <div class="text-danger small mt-1">{{ form.telegram.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Telegram id</label>
+                                {{ form.telegram_id }}
                                 {% if form.telegram.errors %}
                                     <div class="text-danger small mt-1">{{ form.telegram.errors }}</div>
                                 {% endif %}

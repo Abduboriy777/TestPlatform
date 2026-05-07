@@ -10,6 +10,7 @@ from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from utils.telegram import send_telegram_message
 
 from accounts.models import User
 from .forms import FeedbackForm, QuestionCreateForm, QuizForm, SubjectForm
@@ -94,6 +95,9 @@ def finalize_attempt(attempt, answers=None):
     attempt.is_completed = True
     attempt.submitted_at = submitted_at
     attempt.save()
+
+# 🔥 TELEGRAMGA YUBORISH 
+    send_result_to_telegram(attempt.student, attempt)
 
     create_notification(
         attempt.student,
@@ -797,3 +801,25 @@ def teacher_quiz_analytics_view(request, quiz_id):
             "question_stats": question_stats,
         },
     )
+
+
+
+
+
+def send_result_to_telegram(user, attempt):
+    if not user.telegram_id:
+        return
+
+
+    text = f"""
+📊 Test natijasi
+
+👤 User: {user.username}
+📚 Fan: {attempt.quiz.subject.name}
+📝 Test: {attempt.quiz.title}
+
+✅ To‘g‘ri: {attempt.score}/{attempt.total}
+📈 Foiz: {attempt.percentage}%
+"""
+
+    send_telegram_message(user.telegram_id, text)
